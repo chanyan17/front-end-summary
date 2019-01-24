@@ -351,3 +351,226 @@ foo(1, 2, 3, 4)
 const c = (...numbers) => numbers
 console.log(c(1, 2, 3, 4)) // [1, 2, 3, 4]
 ```
+
+### 扩展运算符 ：将一个数组分割，并将各个项作为分离的参数传给函数\
+* 与其他参数混用
+```javascript
+{
+    let value = [-25, -50, -75, -100]
+    console.log(Math.max(...value, -150))
+}
+```
+* 拆解字符串与数组
+```javascript
+{
+    let array = [1, 2, 3]
+    console.log(...array) // 1 2 3
+
+    let string = 'string'
+    console.log(...string) // s t r i n g
+}
+```
+* 数组拼接
+```javascript
+{
+    let a = [1, 2, 3]
+    let b = ['a', 'b', 'c']
+    console.log([...a, ...b, true]) // [1, 2, 3, 'a', 'b', 'c']
+}
+```
+### 解构赋值 ： 更方便地访问数据
+```javascript
+// ES5中，从对象或数组中获取信息、并将特定数据存入本地变量，书写很多重复相似的代码
+{
+    let a = {
+        b: 1,
+        c: 2
+    }
+    let b1 = a.b
+    let c1 = a.c
+
+    const {b, c} = a
+    console.log(b, c, b1, c1) // 1 2 1 2
+}
+```
+* 解构参数来处理可选参数
+```javascript
+{
+    function setFn(a, b, {c, d} = {}) {
+        console.log('xxx')
+    }
+
+    setFn(1, 2)
+}
+```
+* 数组的使用
+```javascript
+// 结合展开运算符
+const names = ['a', 'b', 'c']
+const [d, ...es] = names
+console.log(d) // a
+console.log(es) // ['b', 'c']
+
+// 用{}解构返回数组个数
+const {length} = names
+console.log(length)
+
+// 默认值
+let colors = ['red']
+let [a, b = 'green'] = colors
+console.log(a)
+console.log(b)
+```
+
+* 数组克隆
+```javascript
+// ES5中使用concat()
+var a = [1, 2]
+var b = a.concat()
+
+// 搭配rest参数
+let c = [1, 2]
+let [...d] = c
+console.log(d)
+```
+
+* 数组转对象
+```javascript
+{
+    const points = [
+        [4,5],
+        [10,1],
+        [0,40]
+    ];
+
+    let _points = points.map(item => {
+        let [x, y] = item
+        return {x, y}
+    })
+    // 简写
+    let _points = points.map(([x, y]) => {
+        return {x, y}
+    })
+    console.log(_points)
+    // [
+    //   {x:4,y:5},
+    //   {x:10,y:1},
+    //   {x:0,y:40}
+    // ]
+
+    const points2 = [{id: 'a', name: 'a'}, {id: 'b', name: 'b'}]
+
+    let _points2 = {}
+    points2.map(item => {
+        let {id, name} = item
+        _points2[id] = name
+    })
+    // 简写
+    points2.map(({id, name}) => {
+        _points2[id] = name
+    })
+    console.log(_points2)
+    // {
+    //   a: 'a',
+    //   b: 'b'
+    // }
+}
+```
+* 混合解构
+```javascript
+const data = {
+    a: {b: {d: 1}},
+    c: [
+        {e: 2},
+        {f: 3}
+    ]
+}
+let {a, c} = data
+let [item] = c
+console.log(a) // {b: {d: 1}}
+console.log(item) // {e: 2} 相当于提取data.c[0]
+```
+### 字符串模板
+* 用反引号（`）标识，可以当作普通字符串使用，也可以用来定义多行字符串
+* 将变量名写在${}之中，在字符串中嵌入变量和函数
+```javascript
+{
+    const data = 'd'
+    const str1 = `
+        <ul>
+            <li>${data}</li>
+        </ul>
+    `
+}
+```
+### Class类
+#### 定义类
+* ES5 使用 new 关键字通过函数（也叫构造器）构造对象当做“类”来使用
+```javascript
+{
+    // 传统构造函数
+    function Animal(kind) {
+        this.kind = kind
+    }
+
+    Animal.prototype.getKind = function() {
+        return this.kind
+    }
+
+    let pet = new Animal('dog')
+    console.log(pet.getKind()) // dog
+}
+```
+* 通过class关键字，可以定义类（基于原型的面向对象模式的语法糖, 本质跟es5传统写法一样）
+```javascript
+class person {
+    constructor (name, age) {
+        this.name = name
+        this.age = age
+    }
+
+    desc () {
+        return `${this.name} is ${this.age} years old`
+    }
+}
+
+let _person = new person('Xiaoming', 20)
+console.log(_person.desc())
+// Xiaoming is 20 years old
+```
+### 继承类
+* ES5 通过修改原型链实现继承
+```javascript
+function Dog() {
+    this.bark = function() {
+        console.log(this.kind)
+    }
+}
+
+// 绑定原型 实现继承
+Dog.prototype = new Animal('smallDog')
+let smallDog = new Dog()
+
+smallDog.bark() // smallDog
+```
+* 通过extends关键字实现继承
+```javascript
+class Man extends Person {
+    constructor(name, age) {
+        // 有extend就必须要有super，
+        // 它代表父类的构造函数，
+        // 即Animal中的constructor
+        super(name, age)
+        this.name = name
+        this.age = age
+    }
+
+    sayMan () {
+        console.log(`${this.name} is ${this.age} years old`)
+    }
+}
+
+const someone = new Man('David', 30)
+someone.sayMan()
+// David is 30 years old
+```
