@@ -574,3 +574,89 @@ const someone = new Man('David', 30)
 someone.sayMan()
 // David is 30 years old
 ```
+
+### Promise
+#### 原理
+> promise 对象初始化状态为 pending ；当调用resolve(成功)，会由pending => fulfilled ；当调用reject(失败)，会由pending => rejected
+
+#### Promise的使用流程
+1. new Promise一个实例，而且要 return
+2. new Promise 时要传入函数，函数有resolve reject 两个参数
+3. 成功时执行 resolve，失败时执行reject
+4. then 监听结果
+
+```JavaScript
+// es6对promise的使用 解决了回调地狱的问题
+{
+    function loadImg(src) {
+        const promise = new Promise((resolve, reject) => {
+            // 2. new Promise 时要传入函数，函数有resolve reject 两个参数
+            var img = document.createElement('img')
+            // 3. 成功时执行 resolve，失败时执行reject
+            img.onload = () => {
+                resolve(img)
+            }
+            img.onerror = () => {
+                reject('error create')
+            }
+            img.src = src
+        })
+        // 1. new Promise一个实例，而且要 return
+        return promise
+    }
+
+    // 成功
+    // var result = loadImg('https://fakeimg.pl/300x200/333/EEE/')
+    // 失败
+    var result = loadImg('https://fakeimg.pl/300x200/333/EE')
+    result.then(img => {
+        console.log(img.width) // 成功执行：300
+    }, errorMsg => {
+        console.log(errorMsg) // 失败执行：error create
+    })
+
+    result.then(img => {
+        console.log(img.height) // 成功执行：200
+    }).catch(errorMsg => {
+        console.log(errorMsg) // 失败执行：error create
+    })
+}
+```
+
+
+### Set
+> 类似于数组，但是成员的值都是唯一的，不重复(去重)
+
+#### 定义
+```javascript
+{
+    let set = new Set([1, 2, 3, 4])
+    console.log(set) // Set(4) {1, 2, 3, 4}
+    // 转成数组
+    let array= [...set]
+    console.log(array) // [1, 2, 3, 4]
+}
+```
+
+#### 使用方法
+```javascript
+{
+    for (let i of set) {
+        console.log(i)
+    }
+
+    let set2 = new Set(); // 少了分号会报错
+    [1, 2, 3, 4].map(item => set2.add(item))
+    console.log(set2) // Set(4) {1, 2, 3, 4}
+
+    let bol = set2.delete(2)
+    console.log(set2) // Set(3) {1, 3, 4}
+    console.log(bol) // true
+
+    let bol2 = set2.has(2)
+    console.log(bol2) // false
+
+    set2.clear()
+    console.log(set2) // Set(0) {}
+}
+```
