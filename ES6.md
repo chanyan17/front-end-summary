@@ -660,3 +660,171 @@ someone.sayMan()
     console.log(set2) // Set(0) {}
 }
 ```
+
+
+### Map
+> 跟Object一样，存储的都是键值对组合
+
+#### 与Object的区别
+```javascript
+// Object的键值为字符串，Map则为任意类型
+// Map的键是一个简单类型的值（数字、字符串、布尔值），则只要两个值严格相等
+// 对同一个对象的引用(同一内存地址)，Map结构才将其视为同一个键
+{
+    let obj = {obj: 'object'}
+    let array = [1, 2]
+    let m = new Map()
+    m.set('a', 'aa')
+    m.set(1, 11)
+    m.set(true, true)
+    m.set(obj, 'object_object')
+    m.set({obj: 'object'}, 'object_object')
+    m.set(array, [1, 2, 3])
+    m.set([1, 2], [1, 2, 3])
+
+    console.log(m.get('a')) // aa
+    console.log(m.get(1)) // 11
+    console.log(m.get(true)) // true
+    console.log(m.get(obj)) // object_object
+    console.log(m.get({obj: 'object'})) // undefined
+    console.log(m.get(array)) // [1, 2, 3]
+    console.log(m.get([1, 2])) // undefined
+
+    // Object获取键值使用Object.keys（返回数组）
+
+    // Map获取键值使用 map变量.keys() (返回迭代器)
+    let obj = {a: 1, b: 2}
+    console.log(Object.keys(obj)) // ['a', 'b']
+    console.log(m.keys()) // MapIterator {1, 2}
+}
+```
+
+#### Map的使用
+```javascript
+{
+    let m = new Map()
+    m.set(1, 1)
+    m.set(2, 2)
+    console.log(m.size) // 2
+    console.log(m.has(1)) // true
+    console.log(m.delete(1)) // true
+    console.log(m.clear()) // undefiend
+    console.log(m) // Map(0) {}
+}
+```
+### Iterator
+> ES5表示集合的数据类型有Array、Object；Es6新添加Set、Map
+> 遍历器（Iterator）为各种不同的数据结构提供统一的访问机制
+> 任何数据结构只要部署 Iterator 接口，就可以完成遍历操作（即依次处理该数据结构的所有成员）
+
+#### 原生具备iterator接口的数据类型
+* String
+* Array
+* 函数的 arguments 对象
+* Set
+* Map
+
+```javascript
+{
+    let _string = 'string'
+    let _array = [1, 2, 3]
+    let _Set = new Set()
+    _Set.add(1, 1)
+    let _Map = new Map()
+    _Map.set(1, 1)
+
+    for(let i of _string) {
+        console.log(i)
+    }
+
+    for(let i of _array) {
+        console.log(i)
+    }
+
+    for(let i of _Set) {
+        console.log(i)
+    }
+
+    for(let i of _Map) {
+        console.log(i)
+    }
+
+    function fn() {
+        for(let i of arguments) {
+            console.log(i)
+        }
+    }
+    fn(1, 2, 3)
+}
+```
+
+#### 为Object实现iterator接口
+```javascript
+let obj = {a:1, b:2, c:3};
+
+// method 1
+obj[Symbol.iterator] = function() {
+  let index = 0,
+      list = Object.keys(this).map(e=>this[e])
+  return {
+    next: () => {
+      return {
+        value: list[index++],
+        done: index > list.length,
+      }
+    },
+  }
+}
+
+// method 2
+obj[Symbol.iterator] = function* () {
+  let list = Object.keys(this).map(e=>this[e])
+  for(let v of list) {
+    yield v
+  }
+}
+
+for(let item of obj) {
+  console.log(item) // 1 2 3
+}
+```
+
+#### 遍历方法比较
+| 遍历的方法 | String | Array | 类数组 | Object | Map | Set |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| for..of | √ | √ | √ | × | √ | √ |
+| forEach | × | √ | × | × | √ | √ |
+| for..in | √ | √ | √ | √ | × | × |
+
+### 模块化
+> export命令用于规定模块的对外接口
+> import命令用于输入其他模块提供的功能
+
+#### 规则
+* 使用import命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。(需要阅读文档来获知变量名或函数名)
+```javascript
+// a.js
+export function a () {
+  console.log('a')
+}
+export function b () {
+  console.log('a')
+}
+
+// b.js
+import {a, b} from 'xx/a.js'
+a()
+b()
+```
+
+* 也可以用到export default命令，为模块指定默认输出，其他模块加载该模块时，import命令可以为该匿名函数指定任意名字
+```javascript
+// a.js
+export default function () {
+  console.log('foo')
+}
+
+// b.js
+import aFn from 'xx/a.js'
+aFn()
+```
